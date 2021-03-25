@@ -1,0 +1,169 @@
+14.21 What are threads? Briefly explain the differences between a thread and a process.
+Answer: - All threads within a process share the same state and same memory space, and can communicate with each other directly, because they share the same variables. Threads typically are spawned for a short-term benefit that is usually visualized as a serial task, but which does not have to be performed in a linear manner (such as performing a complex mathematical computation using parallelism, or initializing a large matrix), and then are absorbed when no longer required. The scope of a thread is within a specific code module—which is why we can bolt on threading without affecting the broader application.
+14.22 Briefly explain the concept of context switching.
+Answer: - The concept of context switching is integral to threading. The processor to determine the end of the time slice for each thread uses a hardware timer. The timer signals at the end of the time slice and in turn, the processor saves all information required for the current thread onto a stack. Then the processor moves this information from the stack into a predefined data structure called a context structure. When the processor wants to switch back to a previously executing thread, it transfers all the information from the context structure associated with the thread to the stack. This entire procedure known as context switching. Java supports thread-based multitasking. 
+14.23 What are the advantages of thread-based multitasking as compared to process-based multitasking?
+Answer: - The advantages of thread-based multitasking as compared to process-based multitasking are given below:
+•	Threads share the same address space.
+•	Context switching between threads is normally inexpensive.
+•	Communication between threads is normally inexpensive.
+14.24 Describe two possible ways to create threads in Java.
+
+Answer: There are two possible ways to create threads. Either Create a class that extends the standard Thread class or Create a class that implements the standard Runnable interface. A thread can be defined by extending the java.lang.Thread class or by implementing the java.lang.Runnable interface. The run() method should be overridden and should contain the code that will be executed by the new thread.
+
+1.	Extending the Thread Class
+a.	Create a class by extending the Thread class and override the run() method.
+class MyThread implements Runnable {
+public void run() {
+}
+}
+b.	Create a thread object.
+MyThread thr1 = new MyThread();
+c.	Start Execution of created thread.
+thr1.start();
+
+2.	Implementing the Runnable Interface
+a.	Create a class that implements the interface Runnable and override run() method
+class MyThread implements Runnable {
+public void run() {
+}
+}
+b.	Creating Object
+MyThread myObject = new MyThread();
+c.	Creating Thread Object
+Thread thr1 = new Thread(myObject);
+d.	Start Execution
+thr1.start();
+
+
+14.25 Briefly describe the life cycle of a thread in Java.
+Answer: - The life cycle of threads in Java is very similar to the life cycle of processes running in an operating system. During its life cycle the thread, moves from one state to another depending on the operation performed by it or performed on it. A Java thread can be in one of the following states:
+
+1.	New: A thread that is just instantiated is in new state. When a start () method is invoked, the thread moves to the ready state from which it is automatically moved to runnable state by the thread scheduler.
+2.	Runnable (ready running): thread executing in the JVM is in running state.
+3.	Blocked: A thread that is blocked waiting for a monitor lock is in this state. This can also occur when a thread performs an I/O operation and moves to next (runnable) state.
+4.	Waiting: A thread that is waiting indefinitely for another thread to perform a particular action is in this state.
+5.	Timed_waiting (sleeping): A thread that is waiting for another thread to perform an action for up to a specified waiting time is in this state.
+6.	Terminated (dead): A thread that has exited is in this state. 
+
+
+14.26 Assume the developer has created a thread class and that the main method is as follows:
+public static void main(String [] args){
+Thread th1 = new MyThread();
+Thread th2 = new MyThread();
+th1.run();
+th2.run();
+}
+What will happen when executing this main method? Briefly describe the consequences.
+
+Answer: - This will generate “type miss match” error. We cannot make instance of our custom class directly from Thread class. We can pass our MyThread class object as parameter.
+
+Thread thr1 = new Thread(myObject);
+
+Then we have to call start for the execution of thread.
+
+As, thr1.start();
+
+That will automatically call run method of thread.
+
+
+14.27 Describe the basic methods that are supported by the Thread class. 
+Answer: -  
+
+1.	sleep(): method causes the current thread to sleep for a specifi ed amount of time in milliseconds. 
+Syntax: public static void sleep(long millis)
+
+2.	yield(): method causes the current thread to move from the running state to the RUNNABLE state.
+Syntax: public static void yield() 
+
+3.	isAlive(): method returns true if the thread upon which it is called has been started but not moved to the dead state. 
+Syntax: public final boolean isAlive() 
+
+4.	public final void setDaemon(boolean isDaemon): is used to make the current thread as a daemon thread. 
+Syntax: public final void setDaemon(boolean isDaemon)
+
+5.	public final boolean isDaemon(): method is used to identify whether the current thread is a daemon thread or not.
+Syntax: public final boolean isDaemon()
+
+
+14.28 Explain the meaning of the priority of the thread with a simple example.
+Answer: - all the thread instances the developer created have the same priority, which the process will schedule fairly without worrying about the order. It is important for different threads to have different priorities. Important threads should always have higher priority than less important ones, while threads that need to run quietly as a Daemon may only need the lowest priority. For example, the garbage collector thread just needs the lowest priority to execute, which means it will not be execute before all other threads are scheduled to run. It is possible to control the priority of the threads by using the Java APIs. The Thread.setPriority(…) method serves this purpose. 
+The Thread class provides three constants value for the priority: 
+MIN_PRIORITY = 1, 
+NORM_PRIORITY = 5, 
+MAX_PRIORITY = 10
+The priority range of the thread should be between the minimum and the maximum number
+
+Example to explain priority in threads: 
+
+package assignment3;
+
+class A extends Thread {
+public void run() {
+System.out.println("Thread A started");
+for(int i = 1; i <= 4; i++) {
+System.out.println("\t From ThreadA: i= " + i);
+}
+System.out.println("Exit from A");
+}
+}
+class B extends Thread {
+public void run() {
+System.out.println("Thread B started");
+for(int j = 1; j <= 4; j++) {
+System.out.println("\t From ThreadB: j= " + j);
+}
+System.out.println("Exit from B");
+}
+}
+class C extends Thread {
+public void run() {
+System.out.println("Thread C started");
+for(int k = 1; k <= 4; k++) {
+System.out.println("\t From ThreadC: k= " + k);
+}
+System.out.println("Exit from C");
+}
+}
+public class ThreadPriority {
+public static void main(String args[]) {
+A threadA = new A();
+B threadB = new B();
+C threadC = new C();
+threadC.setPriority(Thread.MAX_PRIORITY);
+threadB.setPriority(threadA.getPriority() + 1);
+threadA.setPriority(Thread.MIN_PRIORITY);
+System.out.println("Started Thread A");
+threadA.start();
+System.out.println("Started Thread B");
+threadB.start();
+System.out.println("Started Thread C");
+threadC.start();
+System.out.println("End of main thread");
+}
+}
+
+Output:- 
+
+Started Thread A
+Started Thread B
+Started Thread C
+Thread B started
+End of main thread
+Thread C started
+From ThreadC: k= 1
+From ThreadC: k= 2
+From ThreadC: k= 3
+From ThreadC: k= 4
+Exit from C
+From ThreadB: j= 1
+From ThreadB: j= 2
+From ThreadB: j= 3
+From ThreadB: j= 4
+Exit from B
+Thread A started
+From ThreadA: i= 1
+From ThreadA: i= 2
+From ThreadA: i= 3
+From ThreadA: i= 4
+Exit from A
